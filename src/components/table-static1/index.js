@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
- 
+import fetch from "node-fetch";
+//import { spl1, spl2, spl3, spl4, spl5, spl6, spl7, spl8, spl9, spl10 } from "../../shared/Spl.js"
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-};
 
-function TableStatic() {
+function TableStatic1() {
 
   const [data1, setData1] = useState(0);
   const [data2, setData2] = useState(0);
@@ -18,17 +16,42 @@ function TableStatic() {
   const [data9, setData9] = useState(0);
   const [data10, setData10] = useState(0);
 
+  function searchAndSet(spl, setFunc){
+    fetch("https://SPLUNK_HOST:8089/services/search/jobs/export", {
+      headers: {
+        "Authorization": "Basic " + btoa("USER:PASSWORD"),
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+      body: encodeURI('search='+spl+'&earliest_time=-30m&output_mode=csv'),
+      })
+    .then((response) => response.body.getReader())
+    .then((reader) => {
+       const decoder = new TextDecoder();
+       let text = "";
+       function readChunk({done, value}){
+         if(done){
+            setFunc(text.split('\n')[1]);
+            return;
+         }
+         text += decoder.decode(value);
+         reader.read().then(readChunk);
+       }
+       reader.read().then(readChunk);
+    });
+  };
+
   useEffect(() => {
-    setData1(data1 + getRandomInt(100));
-    setData2(data2 + getRandomInt(100));
-    setData3(data3 + getRandomInt(100));
-    setData4(data4 + getRandomInt(100));
-    setData5(data5 + getRandomInt(100));
-    setData6(data6 + getRandomInt(100));
-    setData7(data7 + getRandomInt(100));
-    setData8(data8 + getRandomInt(100));
-    setData9(data9 + getRandomInt(100));
-    setData10(data10 + getRandomInt(100));
+//    searchAndSet(spl1, setData1);
+//    searchAndSet(spl2, setData2);
+//    searchAndSet(spl3, setData3);
+//    searchAndSet(spl4, setData4);
+//    searchAndSet(spl5, setData5);
+//    searchAndSet(spl6, setData6);
+//    searchAndSet(spl7, setData7);
+//    searchAndSet(spl8, setData8);
+//    searchAndSet(spl9, setData9);
+//    searchAndSet(spl10, setData10);
   }, []);
 
   return (
@@ -60,19 +83,19 @@ function TableStatic() {
                     Company
                 </th>
                 <td class="text-center text-lg font-bold">
-	            {data1}
+                    {data1}
                 </td>
                 <td class="text-center text-lg font-bold">
-	            {data2}
+                    {data2}
                 </td>
                 <td class="text-center text-lg font-bold">
-	            {data3}
+                    {data3}
                 </td>
                 <td class="text-center text-lg font-bold">
-	            {data4}
+                    {data4}
                 </td>
                 <td class="text-center text-lg font-bold">
-	            {data5}
+                    {data5}
                 </td>
             </tr>
             <tr class="bg-white dark:bg-gray-800">
@@ -80,19 +103,19 @@ function TableStatic() {
                     Connection
                 </th>
                 <td class="text-center text-lg font-bold">
-	            {data6}
+                    {data6}
                 </td>
                 <td class="text-center text-lg font-bold">
-	            {data7}
+                    {data7}
                 </td>
                 <td class="text-center text-lg font-bold">
-	            {data8}
+                    {data8}
                 </td>
                 <td class="text-center text-lg font-bold">
-	            {data9}
+                    {data9}
                 </td>
                 <td class="text-center text-lg font-bold">
-	            {data10}
+                    {data10}
                 </td>
             </tr>
         </tbody>
@@ -100,4 +123,4 @@ function TableStatic() {
   );
 };
 
-export default TableStatic;
+export default TableStatic1;
